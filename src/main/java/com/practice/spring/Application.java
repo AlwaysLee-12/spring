@@ -1,5 +1,6 @@
 package com.practice.spring;
 
+import com.practice.spring.common.config.DaoFactory;
 import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.User;
@@ -14,7 +15,7 @@ public class Application {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		SpringApplication.run(Application.class, args);
 
-		UserDao dao = new UserDao(new SimpleConnectionMaker());
+		UserDao dao = new DaoFactory().userDao();
 
 		User user = new User();
 		user.setId("alwaysLee");
