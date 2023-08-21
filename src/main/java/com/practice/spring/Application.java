@@ -6,6 +6,8 @@ import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.sql.SQLException;
 
@@ -15,7 +17,8 @@ public class Application {
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		SpringApplication.run(Application.class, args);
 
-		UserDao dao = new DaoFactory().userDao();
+		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(DaoFactory.class);
+		UserDao dao = applicationContext.getBean("userDao", UserDao.class);
 
 		User user = new User();
 		user.setId("alwaysLee");
