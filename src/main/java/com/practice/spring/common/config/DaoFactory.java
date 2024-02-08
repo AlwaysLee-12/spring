@@ -1,6 +1,7 @@
 package com.practice.spring.common.config;
 
 import com.practice.spring.common.database.ConnectionMaker;
+import com.practice.spring.common.database.CountingConnectionMaker;
 import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.dao.UserDao;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,11 @@ public class DaoFactory {
 
     @Bean
     public ConnectionMaker connectionMaker() {
+        return new CountingConnectionMaker(realConnectionMaker());
+    }
+
+    @Bean
+    public ConnectionMaker realConnectionMaker() {
         return new SimpleConnectionMaker();
     }
 }
