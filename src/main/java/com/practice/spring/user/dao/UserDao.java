@@ -3,18 +3,21 @@ package com.practice.spring.user.dao;
 import com.practice.spring.common.database.ConnectionMaker;
 import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.domain.User;
+import lombok.NoArgsConstructor;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
+@NoArgsConstructor
 public class UserDao {
-    private ConnectionMaker connectionMaker;
+    private DataSource dataSource;
 
-    public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public UserDao(DataSource DataSource) {
+        this.dataSource = DataSource;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id, name, password) values(?,?,?)");
@@ -29,7 +32,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?"
@@ -51,7 +54,7 @@ public class UserDao {
     }
 
     //수정자 DI
-    public void setConnectionMaker(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }
