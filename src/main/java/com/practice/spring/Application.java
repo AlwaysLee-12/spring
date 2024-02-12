@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import java.sql.SQLException;
 
@@ -36,6 +37,9 @@ public class Application {
 //
 //		System.out.println(user2.getId() + "조회 성공");
 		ApplicationContext ac = new AnnotationConfigApplicationContext(DaoFactory.class);
+
+//		GenericXmlApplicationContext ac = new GenericXmlApplicationContext("com/practice/spring/common/config/application-context.xml"); xml을 이용하는 ac 생성
+
 		var userDao = ac.getBean("userDao", UserDao.class);
 
 		var connectionMaker = ac.getBean("connectionMaker", CountingConnectionMaker.class);
