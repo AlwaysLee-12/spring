@@ -54,42 +54,14 @@ public class UserDao {
         ps.close();
         c.close();
 
-        if(user == null) throw new EmptyResultDataAccessException(1);
+        if (user == null) throw new EmptyResultDataAccessException(1);
 
         return user;
     }
 
     public void deleteAll() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement(
-                    "delete * from users"
-            );
-            ps.executeUpdate();
-        } catch (SQLException exception) {
-            throw exception;
-        }finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-
-            try {
-                if (c != null) {
-                    c.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-        }
-
-
+        StatementStrategy strategy = new DeleteAllStatement();
+        jdbcContextWithStatementStrategy(strategy);
     }
 
     public int getCount() throws SQLException {
@@ -108,7 +80,7 @@ public class UserDao {
             return rs.getInt(1);
         } catch (SQLException exception) {
             throw exception;
-        }finally {
+        } finally {
             try {
                 if (rs != null) {
                     rs.close();
@@ -123,6 +95,37 @@ public class UserDao {
             } catch (SQLException exception) {
 
             }
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (SQLException exception) {
+
+            }
+        }
+    }
+
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+
+        try {
+            c = dataSource.getConnection();
+
+            ps = stmt.makePreparedStatement(c);
+
+            ps.executeUpdate();
+        } catch (SQLException exception) {
+            throw exception;
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException exception) {
+
+            }
+
             try {
                 if (c != null) {
                     c.close();
