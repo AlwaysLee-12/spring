@@ -60,34 +60,77 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
 
-        PreparedStatement ps = c.prepareStatement(
-                "delete * from users"
-        );
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement(
+                    "delete * from users"
+            );
+            ps.executeUpdate();
+        } catch (SQLException exception) {
+            throw exception;
+        }finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException exception) {
 
-        ps.executeUpdate();
+            }
 
-        ps.close();
-        c.close();
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (SQLException exception) {
+
+            }
+        }
+
+
     }
 
     public int getCount() throws SQLException {
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-        PreparedStatement ps = c.prepareStatement(
-                "select count(*) from users"
-        );
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement(
+                    "select count(*) from users"
+            );
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt(1);
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException exception) {
+            throw exception;
+        }finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException exception) {
 
-        rs.close();
-        ps.close();
-        c.close();
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException exception) {
 
-        return count;
+            }
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (SQLException exception) {
+
+            }
+        }
     }
 
     //수정자 DI
