@@ -18,7 +18,23 @@ public class UserDao {
     }
 
     public void add(User user) throws SQLException {
-        StatementStrategy st = new AddStatement(user);
+        //전략 클래스 사용 시
+        //StatementStrategy st = new AddStatement(user);
+        //jdbcContextWithStatementStrategy(st);
+
+        //전략 클래스를 익명 클래스로 구현
+        StatementStrategy st = new StatementStrategy() {
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement(
+                        "insert into users(id, name, password) values(?,?,?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+
+                return ps;
+            }
+        };
         jdbcContextWithStatementStrategy(st);
     }
 
@@ -50,8 +66,20 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
+        //전략 클래스 사용 시
         StatementStrategy strategy = new DeleteAllStatement();
         jdbcContextWithStatementStrategy(strategy);
+
+        //전략 클래스 대신 익명 클래스 사용 시
+        StatementStrategy st = new StatementStrategy() {
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("delete from users");
+
+                return ps;
+            }
+        };
+        jdbcContextWithStatementStrategy(st);
     }
 
     public int getCount() throws SQLException {
