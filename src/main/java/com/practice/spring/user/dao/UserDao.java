@@ -11,10 +11,10 @@ import java.sql.*;
 
 @NoArgsConstructor
 public class UserDao {
-    private DataSource dataSource;
+    private JdbcContext jdbcContext;
 
-    public UserDao(DataSource DataSource) {
-        this.dataSource = DataSource;
+    public void setJdbcContext(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
     }
 
     public void add(User user) throws SQLException {
@@ -23,19 +23,20 @@ public class UserDao {
         //jdbcContextWithStatementStrategy(st);
 
         //전략 클래스를 익명 클래스로 구현
-        StatementStrategy st = new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement(
-                        "insert into users(id, name, password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
+        jdbcContext.workWithStatementStrategy(
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                        PreparedStatement ps = c.prepareStatement(
+                                "insert into users(id, name, password) values(?,?,?)");
+                        ps.setString(1, user.getId());
+                        ps.setString(2, user.getName());
+                        ps.setString(3, user.getPassword());
 
-                return ps;
-            }
-        };
-        jdbcContextWithStatementStrategy(st);
+                        return ps;
+                    }
+                }
+        );
     }
 
     public User get(String id) throws SQLException {
@@ -67,19 +68,20 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
         //전략 클래스 사용 시
-        StatementStrategy strategy = new DeleteAllStatement();
-        jdbcContextWithStatementStrategy(strategy);
+        //StatementStrategy strategy = new DeleteAllStatement();
+        //jdbcContextWithStatementStrategy(strategy);
 
         //전략 클래스 대신 익명 클래스 사용 시
-        StatementStrategy st = new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("delete from users");
+        jdbcContext.workWithStatementStrategy(
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                        PreparedStatement ps = c.prepareStatement("delete from users");
 
-                return ps;
-            }
-        };
-        jdbcContextWithStatementStrategy(st);
+                        return ps;
+                    }
+                }
+        );
     }
 
     public int getCount() throws SQLException {
@@ -113,37 +115,6 @@ public class UserDao {
             } catch (SQLException exception) {
 
             }
-            try {
-                if (c != null) {
-                    c.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-        }
-    }
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = stmt.makePreparedStatement(c);
-
-            ps.executeUpdate();
-        } catch (SQLException exception) {
-            throw exception;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-
             try {
                 if (c != null) {
                     c.close();
