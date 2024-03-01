@@ -43,4 +43,27 @@ public class JdbcContext {
             }
         }
     }
+
+    public void executeSql(final String sql, final String... params) throws SQLException {
+        workWithStatementStrategy(
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                        PreparedStatement ps = c.prepareStatement(sql);
+
+                        if (params.length > 0) {
+                            setParams(ps, params);
+                        }
+
+                        return ps;
+                    }
+                }
+        );
+    }
+
+    private void setParams(PreparedStatement ps, final String... params) throws SQLException {
+        for (int i = 1; i < params.length; i++) {
+            ps.setString(i, params[0]);
+        }
+    }
 }
