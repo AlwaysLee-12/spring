@@ -5,16 +5,28 @@ import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.domain.User;
 import lombok.NoArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
 @NoArgsConstructor
 public class UserDao {
-    private JdbcContext jdbcContext;
+//    private JdbcContext jdbcContext;
 
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
+//    public void setJdbcContext(JdbcContext jdbcContext) {
+//        this.jdbcContext = jdbcContext;
+//    }
+
+    private JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
+
+    //수정자 DI
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+
+        this.dataSource = dataSource;
     }
 
     public void add(User user) throws SQLException {
@@ -39,7 +51,10 @@ public class UserDao {
 //        );
 
         //변하지 않는 부분과 변하는 부분 분리
-        jdbcContext.executeSql("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+//        jdbcContext.executeSql("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+
+        //Jdbc Template 활용
+        jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws SQLException {
@@ -87,7 +102,18 @@ public class UserDao {
 //        );
 
         //변하지 않는 부분과 변하는 부분 분리
-        jdbcContext.executeSql("delete from users");
+//        jdbcContext.executeSql("delete from users");
+
+        //JdbcTemplate 사용
+        //1
+//        jdbcTemplate.update(new PreparedStatementCreator() {
+//            @Override
+//            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+//                return con.prepareStatement("delete from users");
+//            }
+//        });
+        //2
+        jdbcTemplate.update("delete from users");
     }
 
 
@@ -131,10 +157,5 @@ public class UserDao {
 
             }
         }
-    }
-
-    //수정자 DI
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
     }
 }
