@@ -4,12 +4,16 @@ import com.practice.spring.common.database.ConnectionMaker;
 import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.domain.User;
 import lombok.NoArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 @NoArgsConstructor
 public class UserDao {
@@ -20,13 +24,10 @@ public class UserDao {
 //    }
 
     private JdbcTemplate jdbcTemplate;
-    private DataSource dataSource;
 
     //수정자 DI
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-
-        this.dataSource = dataSource;
     }
 
     public void add(User user) throws SQLException {
@@ -58,30 +59,48 @@ public class UserDao {
     }
 
     public User get(String id) throws SQLException {
-        Connection c = dataSource.getConnection();
+//        Connection c = dataSource.getConnection();
+//
+//        PreparedStatement ps = c.prepareStatement(
+//                "select * from users where id = ?"
+//        );
+//        ps.setString(1, id);
+//
+//        ResultSet rs = ps.executeQuery();
+//
+//        User user = null;
+//        if (rs.next()) {
+//            user = new User();
+//            user.setId(rs.getString("id"));
+//            user.setName(rs.getString("name"));
+//            user.setPassword(rs.getString("password"));
+//        }
+//
+//        rs.close();
+//        ps.close();
+//        c.close();
+//
+//        if (user == null) throw new EmptyResultDataAccessException(1);
+//
+//        return user;
 
-        PreparedStatement ps = c.prepareStatement(
-                "select * from users where id = ?"
-        );
-        ps.setString(1, id);
+        //Jdbc Template 활용
+        //1
+        return jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, new RowMapper<User>(){
 
-        ResultSet rs = ps.executeQuery();
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
 
-        User user = null;
-        if (rs.next()) {
-            user = new User();
-            user.setId(rs.getString("id"));
-            user.setName(rs.getString("name"));
-            user.setPassword(rs.getString("password"));
-        }
+                user.setId(rs.getString("id"));
+                user.setName(rs.getString("name"));
+                user.setPassword(rs.getString("password"));
 
-        rs.close();
-        ps.close();
-        c.close();
+                return user;
+            }
+        });
 
-        if (user == null) throw new EmptyResultDataAccessException(1);
 
-        return user;
     }
 
     public void deleteAll() throws SQLException {
@@ -119,43 +138,75 @@ public class UserDao {
 
 
     public int getCount() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+//        Connection c = null;
+//        PreparedStatement ps = null;
+//        ResultSet rs = null;
+//
+//        try {
+//            c = dataSource.getConnection();
+//            ps = c.prepareStatement(
+//                    "select count(*) from users"
+//            );
+//
+//            rs = ps.executeQuery();
+//            rs.next();
+//            return rs.getInt(1);
+//        } catch (SQLException exception) {
+//            throw exception;
+//        } finally {
+//            try {
+//                if (rs != null) {
+//                    rs.close();
+//                }
+//            } catch (SQLException exception) {
+//
+//            }
+//            try {
+//                if (ps != null) {
+//                    ps.close();
+//                }
+//            } catch (SQLException exception) {
+//
+//            }
+//            try {
+//                if (c != null) {
+//                    c.close();
+//                }
+//            } catch (SQLException exception) {
+//
+//            }
+//        }
 
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement(
-                    "select count(*) from users"
-            );
+        //Jdbc Template 활용
+        //1
+//        return jdbcTemplate.query(new PreparedStatementCreator() {
+//            @Override
+//            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+//                return con.prepareStatement("select count(*) from users");
+//            }
+//        }, new ResultSetExtractor<Integer>() {
+//            @Override
+//            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+//                rs.next();
+//                return rs.getInt(1);
+//            }
+//        });
+        //2
+        return jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+    }
 
-            rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException exception) {
-            throw exception;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException exception) {
+    public List<User> getAll() {
+        return jdbcTemplate.query("select * from users order by id", new RowMapper<>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                User user = new User();
 
+                user.setId(rs.getString("id"));
+                user.setName(rs.getString("name"));
+                user.setPassword(rs.getString("password"));
+
+                return user;
             }
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-            try {
-                if (c != null) {
-                    c.close();
-                }
-            } catch (SQLException exception) {
-
-            }
-        }
+        });
     }
 }
