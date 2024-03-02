@@ -24,6 +24,18 @@ public class UserDao {
 //    }
 
     private JdbcTemplate jdbcTemplate;
+    private RowMapper<User> userRowMapper = new RowMapper<>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+
+            return user;
+        }
+    };
 
     //수정자 DI
     public void setDataSource(DataSource dataSource) {
@@ -86,19 +98,7 @@ public class UserDao {
 
         //Jdbc Template 활용
         //1
-        return jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, new RowMapper<User>(){
-
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-
-                user.setId(rs.getString("id"));
-                user.setName(rs.getString("name"));
-                user.setPassword(rs.getString("password"));
-
-                return user;
-            }
-        });
+        return jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, userRowMapper);
 
 
     }
@@ -196,17 +196,6 @@ public class UserDao {
     }
 
     public List<User> getAll() {
-        return jdbcTemplate.query("select * from users order by id", new RowMapper<>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-
-                user.setId(rs.getString("id"));
-                user.setName(rs.getString("name"));
-                user.setPassword(rs.getString("password"));
-
-                return user;
-            }
-        });
+        return jdbcTemplate.query("select * from users order by id", userRowMapper);
     }
 }
