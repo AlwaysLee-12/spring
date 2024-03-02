@@ -1,6 +1,6 @@
 package com.practice.spring.learningtest.template;
 
-public interface LineCallback {
+public interface LineCallback<T> {
 
-    public Integer doSomethingWithLine(String line, Integer value);
+    public T doSomethingWithLine(String line, T value);
 }
