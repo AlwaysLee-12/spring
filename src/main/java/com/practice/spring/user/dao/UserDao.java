@@ -1,8 +1,10 @@
 package com.practice.spring.user.dao;
 
+import com.mysql.cj.exceptions.MysqlErrorNumbers;
 import com.practice.spring.common.database.ConnectionMaker;
 import com.practice.spring.common.database.SimpleConnectionMaker;
 import com.practice.spring.user.domain.User;
+import com.practice.spring.user.exception.DuplicateUserIdException;
 import lombok.NoArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,6 +26,7 @@ public class UserDao {
 //    }
 
     private JdbcTemplate jdbcTemplate;
+//    private JdbcContext jdbcContext;
     private RowMapper<User> userRowMapper = new RowMapper<>() {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -42,35 +45,47 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void add(User user) throws SQLException {
+    public void add(User user) {
         //전략 클래스 사용 시
-        //StatementStrategy st = new AddStatement(user);
-        //jdbcContextWithStatementStrategy(st);
+//        StatementStrategy st = new AddStatement(user);
+//        jdbcContextWithStatementStrategy(st);
 
-        //전략 클래스를 익명 클래스로 구현
-//        jdbcContext.workWithStatementStrategy(
-//                new StatementStrategy() {
-//                    @Override
-//                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-//                        PreparedStatement ps = c.prepareStatement(
-//                                "insert into users(id, name, password) values(?,?,?)");
-//                        ps.setString(1, user.getId());
-//                        ps.setString(2, user.getName());
-//                        ps.setString(3, user.getPassword());
+//        try {
+//            //전략 클래스를 익명 클래스로 구현
+//            jdbcContext.workWithStatementStrategy(
+//                    new StatementStrategy() {
+//                        @Override
+//                        public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+//                            PreparedStatement ps = c.prepareStatement(
+//                                    "insert into users(id, name, password) values(?,?,?)");
+//                            ps.setString(1, user.getId());
+//                            ps.setString(2, user.getName());
+//                            ps.setString(3, user.getPassword());
 //
-//                        return ps;
+//                            return ps;
+//                        }
 //                    }
-//                }
-//        );
+//            );
+//        } catch (SQLException e) {
+//            if (e.getErrorCode() == MysqlErrorNumbers.ER_DUP_ENTRY) {
+//                throw new DuplicateUserIdException(e);
+//            } else {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
 
         //변하지 않는 부분과 변하는 부분 분리
 //        jdbcContext.executeSql("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
 
+
         //Jdbc Template 활용
         jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+
+
     }
 
-    public User get(String id) throws SQLException {
+    public User get(String id) {
 //        Connection c = dataSource.getConnection();
 //
 //        PreparedStatement ps = c.prepareStatement(
@@ -98,12 +113,12 @@ public class UserDao {
 
         //Jdbc Template 활용
         //1
-        return jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, userRowMapper);
+        return jdbcTemplate.queryForObject("select * from users where id = ?", new Object[]{id}, userRowMapper);
 
 
     }
 
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
         //전략 클래스 사용 시
         //StatementStrategy strategy = new DeleteAllStatement();
         //jdbcContextWithStatementStrategy(strategy);
@@ -136,8 +151,7 @@ public class UserDao {
     }
 
 
-
-    public int getCount() throws SQLException {
+    public int getCount() {
 //        Connection c = null;
 //        PreparedStatement ps = null;
 //        ResultSet rs = null;
