@@ -7,6 +7,7 @@ import com.practice.spring.user.domain.User;
 import com.practice.spring.user.exception.DuplicateUserIdException;
 import lombok.NoArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -26,7 +27,7 @@ public class UserDao {
 //    }
 
     private JdbcTemplate jdbcTemplate;
-//    private JdbcContext jdbcContext;
+    //    private JdbcContext jdbcContext;
     private RowMapper<User> userRowMapper = new RowMapper<>() {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -45,7 +46,7 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void add(User user) {
+    public void add(User user) throws DuplicateUserIdException {
         //전략 클래스 사용 시
 //        StatementStrategy st = new AddStatement(user);
 //        jdbcContextWithStatementStrategy(st);
@@ -80,9 +81,12 @@ public class UserDao {
 
 
         //Jdbc Template 활용
-        jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
-
-
+        try {
+            jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+        } catch (DuplicateKeyException e) {
+            e.printStackTrace();
+            throw new DuplicateUserIdException(e);
+        }
     }
 
     public User get(String id) {
