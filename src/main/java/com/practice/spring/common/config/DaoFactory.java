@@ -4,6 +4,7 @@ package com.practice.spring.common.config;
 //import com.practice.spring.common.database.CountingDataSource;
 //import com.practice.spring.common.database.SimpleDataSource;
 import com.practice.spring.user.dao.UserDao;
+import com.practice.spring.user.dao.UserDaoJdbc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -16,7 +17,7 @@ import java.sql.Driver;
 public class DaoFactory {
     @Bean
     public UserDao userDao() {
-        UserDao userDao = new UserDao();
+        UserDaoJdbc userDao = new UserDaoJdbc();
 
         userDao.setDataSource(dataSource());
 
