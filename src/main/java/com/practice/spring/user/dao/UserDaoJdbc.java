@@ -1,5 +1,6 @@
 package com.practice.spring.user.dao;
 
+import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
 import com.practice.spring.user.exception.DuplicateUserIdException;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,9 @@ public class UserDaoJdbc implements UserDao {
             user.setId(rs.getString("id"));
             user.setName(rs.getString("name"));
             user.setPassword(rs.getString("password"));
+            user.setLevel(Level.valueOf(rs.getInt("level")));
+            user.setLogin(rs.getInt("login"));
+            user.setRecommend(rs.getInt("recommend"));
 
             return user;
         }
@@ -74,7 +78,8 @@ public class UserDaoJdbc implements UserDao {
 
 
         //Jdbc Template 활용
-        jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+        jdbcTemplate.update("insert into users(id, name, password, level, login, recommend) values(?,?,?,?,?,?)",
+                user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
         //예외 전환
 //        try {
 //            jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());

@@ -10,7 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
     String id;
     String name;
     String password;
+    Level level;
+    int login;
+    int recommend;
 }
