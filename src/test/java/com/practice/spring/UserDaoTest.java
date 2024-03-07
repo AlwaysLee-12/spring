@@ -164,4 +164,25 @@ public class UserDaoTest {
         }
 
     }
+
+    @Test
+    public void update() {
+        userDao.deleteAll();
+
+        userDao.add(user1);
+
+        user1.setName("update user");
+        user1.setPassword("update pawd");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+
+        userDao.update(user1);
+
+        User updatedUser = userDao.get(user1.getId());
+        checkSameUser(user1, updatedUser);
+        //update 쿼리에서 조건문을 빼 먹었을 때 아래 케이스 실패
+        User getUser2 = userDao.get(user2.getId());
+        checkSameUser(user2, getUser2);
+    }
 }
