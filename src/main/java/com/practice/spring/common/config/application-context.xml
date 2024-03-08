@@ -21,4 +21,8 @@
         <property name="username" value="root"/>
         <property name="password" value="fightinh"/>
     </bean>
+
+    <bean id="userService" class="com.practice.spring.user.UserService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
 </beans>
