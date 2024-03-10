@@ -22,7 +22,12 @@
         <property name="password" value="fightinh"/>
     </bean>
 
+    <bean id="userLevelUpgradePolicy" class="com.practice.spring.user.policy.UserLevelUpgradeNormal">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
     <bean id="userService" class="com.practice.spring.user.UserService">
         <property name="userDao" ref="userDao"/>
+        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
     </bean>
 </beans>
