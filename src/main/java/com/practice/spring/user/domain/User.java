@@ -17,4 +17,13 @@ public class User {
     Level level;
     int login;
     int recommend;
+
+    public void upgradeLevel() {
+        Level nextLevel = level.nextLevel();
+
+        if (nextLevel == null) {
+            throw new IllegalStateException("can not upgrade level : " + level);
+        }
+        level = nextLevel;
+    }
 }

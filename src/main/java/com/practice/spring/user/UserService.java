@@ -17,25 +17,30 @@ public class UserService {
     public void upgradeLevels() {
         List<User> users = userDao.getAll();
 
-        users.forEach(e -> {
-            Boolean changed = null;
-
-            if (e.getLevel().equals(Level.BASIC) && e.getLogin() >= 50) {
-                e.setLevel(Level.SILVER);
-                changed = true;
-            } else if (e.getLevel().equals(Level.SILVER) && e.getRecommend() >= 30) {
-                e.setLevel(Level.GOLD);
-                changed = true;
-            } else if (e.getLevel().equals(Level.GOLD)) {
-                changed = false;
-            } else {
-                changed = false;
-            }
-
-            if (changed) {
-                userDao.update(e);
+        users.forEach(user -> {
+            if (canUpgradeLevel(user)) {
+                upgradeLevel(user);
             }
         });
+    }
+
+    private boolean canUpgradeLevel(User user) {
+        Level currentLevel = user.getLevel();
+
+        switch (currentLevel) {
+            case BASIC -> {
+                return user.getLogin() >= 50;
+            }
+            case SILVER -> {
+                return user.getRecommend() >= 30;
+            }
+            default -> throw new IllegalArgumentException("no such level : " + currentLevel);
+        }
+    }
+
+    private void upgradeLevel(User user) {
+        user.upgradeLevel();
+        userDao.update(user);
     }
 
     public void add(User user) {
