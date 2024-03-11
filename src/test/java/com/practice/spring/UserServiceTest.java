@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static com.practice.spring.user.policy.UserLevelUpgradeNormal.MIN_LOGCOUNT_FOR_SILVER;
 import static com.practice.spring.user.policy.UserLevelUpgradeNormal.MIN_RECOMMEND_FOR_GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "/test-application-context.xml")
@@ -26,6 +28,8 @@ public class UserServiceTest {
     @Autowired
     UserDao userDao;
     List<User> users;
+    @Autowired
+    DataSource dataSource;
 
     //DI 잘 됐는지 확인
     @Test
@@ -45,7 +49,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void upgradeLevels() {
+    public void upgradeLevels() throws Exception {
         userDao.deleteAll();
 
         users.forEach(user -> userDao.add(user));
@@ -83,5 +87,27 @@ public class UserServiceTest {
         User getUserWithoutLevelResult = userDao.get(userWithoutLevel.getId());
         assertThat(getUserWithLevelResult.getLevel()).isEqualTo(userWithLevel.getLevel());
         assertThat(getUserWithoutLevelResult.getLevel()).isEqualTo(Level.BASIC);
+    }
+
+    @Test
+    public void upgradeAllOrNothing() throws Exception {
+        TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao);
+        userService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
+        userService.setUserDao(userDao);
+        userService.setDataSource(dataSource);
+
+        userDao.deleteAll();
+
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        try {
+            userService.upgradeLevels();
+            fail("TestUserServiceException expected");
+        } catch (TestUserServiceException e) {
+        }
+
+        checkLevel(users.get(1), false);
     }
 }
