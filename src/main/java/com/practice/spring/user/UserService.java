@@ -20,7 +20,8 @@ public class UserService {
 
     UserDao userDao;
     UserLevelUpgradePolicy userLevelUpgradePolicy;
-    private DataSource dataSource;
+    //    private DataSource dataSource;
+    PlatformTransactionManager transactionManager;
 
 
     public void setUserDao(UserDao userDao) {
@@ -31,8 +32,12 @@ public class UserService {
         this.userLevelUpgradePolicy = userLevelUpgradePolicy;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+//    public void setDataSource(DataSource dataSource) {
+//        this.dataSource = dataSource;
+//    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 
     public void upgradeLevels() throws Exception {
@@ -41,8 +46,6 @@ public class UserService {
         //Connection object 생성, 트랜잭션 저장소에 바인딩(for 트랜잭션 동기화)
 //        Connection c = DataSourceUtils.getConnection(dataSource);
 //        c.setAutoCommit(false);
-
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -29,7 +30,9 @@ public class UserServiceTest {
     UserDao userDao;
     List<User> users;
     @Autowired
-    DataSource dataSource;
+    PlatformTransactionManager transactionManager;
+//    @Autowired
+//    DataSource dataSource;
 
     //DI 잘 됐는지 확인
     @Test
@@ -94,7 +97,8 @@ public class UserServiceTest {
         TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao);
         userService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
         userService.setUserDao(userDao);
-        userService.setDataSource(dataSource);
+//        userService.setDataSource(dataSource);
+        userService.setTransactionManager(transactionManager);
 
         userDao.deleteAll();
 
