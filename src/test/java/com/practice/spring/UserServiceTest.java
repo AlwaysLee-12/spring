@@ -43,11 +43,11 @@ public class UserServiceTest {
     @BeforeEach
     public void setUp() {
         users = List.of(
-                new User("id1", "name1", "pwd1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0),
-                new User("id2", "name2", "pwd2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0),
-                new User("id3", "name3", "pwd3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD - 1),
-                new User("id4", "name4", "pwd4", Level.SILVER, 70, MIN_RECOMMEND_FOR_GOLD),
-                new User("id5", "name5", "pwd5", Level.GOLD, 80, Integer.MAX_VALUE)
+                new User("id1", "name1", "pwd1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0, "a@naver,com"),
+                new User("id2", "name2", "pwd2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0, "b@naver,com"),
+                new User("id3", "name3", "pwd3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD - 1, "c@naver,com"),
+                new User("id4", "name4", "pwd4", Level.SILVER, 70, MIN_RECOMMEND_FOR_GOLD, "d@naver,com"),
+                new User("id5", "name5", "pwd5", Level.GOLD, 80, Integer.MAX_VALUE, "e@naver,com")
         );
     }
 
