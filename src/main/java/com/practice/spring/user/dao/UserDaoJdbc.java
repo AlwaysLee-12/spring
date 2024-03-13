@@ -33,6 +33,7 @@ public class UserDaoJdbc implements UserDao {
             user.setLevel(Level.valueOf(rs.getInt("level")));
             user.setLogin(rs.getInt("login"));
             user.setRecommend(rs.getInt("recommend"));
+            user.setEmail(rs.getString("email"));
 
             return user;
         }
@@ -78,8 +79,8 @@ public class UserDaoJdbc implements UserDao {
 
 
         //Jdbc Template 활용
-        jdbcTemplate.update("insert into users(id, name, password, level, login, recommend) values(?,?,?,?,?,?)",
-                user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
+        jdbcTemplate.update("insert into users(id, name, password, level, login, recommend, email) values(?,?,?,?,?,?,?)",
+                user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
         //예외 전환
 //        try {
 //            jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
@@ -216,8 +217,8 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void update(User user) {
         jdbcTemplate.update(
-                "update users set name = ?, password = ?, level = ?, login = ?, recommend = ? where id = ?, ",
-                user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId()
+                "update users set name = ?, password = ?, level = ?, login = ?, recommend = ?, email = ? where id = ?, ",
+                user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail(), user.getId()
         );
     }
 

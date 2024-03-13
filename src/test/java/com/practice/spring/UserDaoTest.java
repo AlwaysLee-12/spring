@@ -66,9 +66,9 @@ public class UserDaoTest {
 //                "jdbc:mysql://localhost/testdb", "root", "1234", true);
 //        userDao.setDataSource(dataSource);
 
-        user1 = new User("cson", "name1", "pwd1", Level.BASIC, 1, 0);
-        user2 = new User("byson", "name2", "pwd2", Level.SILVER, 55, 10);
-        user3 = new User("aon", "name3", "pwd3", Level.GOLD, 100, 40);
+        user1 = new User("cson", "name1", "pwd1", Level.BASIC, 1, 0, "a@naver.com");
+        user2 = new User("byson", "name2", "pwd2", Level.SILVER, 55, 10, "b@naver.com");
+        user3 = new User("aon", "name3", "pwd3", Level.GOLD, 100, 40, "c@naver.com");
     }
 
     @Test
@@ -147,6 +147,7 @@ public class UserDaoTest {
         assertThat(user1.getLevel()).isEqualTo(user2.getLevel());
         assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
         assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
+        assertThat(user1.getEmail()).isEqualTo(user2.getEmail());
     }
 
     @Test
@@ -176,6 +177,7 @@ public class UserDaoTest {
         user1.setLevel(Level.GOLD);
         user1.setLogin(1000);
         user1.setRecommend(999);
+        user1.setEmail("ac@naver.com");
 
         userDao.update(user1);
 
