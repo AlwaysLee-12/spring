@@ -63,7 +63,7 @@ public class JdbcContext {
 
     private void setParams(PreparedStatement ps, final String... params) throws SQLException {
         for (int i = 1; i < params.length; i++) {
-            ps.setString(i, params[0]);
+            ps.setString(i, params[i - 1]);
         }
     }
 }
