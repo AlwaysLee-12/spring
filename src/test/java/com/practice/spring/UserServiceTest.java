@@ -31,6 +31,8 @@ public class UserServiceTest {
     List<User> users;
     @Autowired
     PlatformTransactionManager transactionManager;
+    @Autowired
+    MailSender mailSender;
 //    @Autowired
 //    DataSource dataSource;
 
@@ -94,7 +96,7 @@ public class UserServiceTest {
 
     @Test
     public void upgradeAllOrNothing() throws Exception {
-        TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao);
+        TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao, mailSender);
         userService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
         userService.setUserDao(userDao);
 //        userService.setDataSource(dataSource);

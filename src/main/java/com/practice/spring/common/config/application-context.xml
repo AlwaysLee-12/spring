@@ -24,7 +24,15 @@
 
     <bean id="userLevelUpgradePolicy" class="com.practice.spring.user.policy.UserLevelUpgradeNormal">
         <property name="userDao" ref="userDao"/>
+        <property name="mailSender" ref="mailSender"/>
     </bean>
+
+<!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+<!--        <property name="host" value="mail.server.com"/>-->
+<!--    </bean>-->
+
+<!--    테스트용 자바 메일-->
+    <bean id="mailSender" class="com.practice.spring.user.DummyMailServer"/>
 
     <bean id="userService" class="com.practice.spring.user.UserService">
         <property name="userDao" ref="userDao"/>
