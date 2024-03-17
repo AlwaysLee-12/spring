@@ -1,13 +1,17 @@
 package com.practice.spring;
 
+import com.practice.spring.user.MockMailSender;
 import com.practice.spring.user.UserService;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
+import com.practice.spring.user.policy.UserLevelUpgradeNormal;
+import com.practice.spring.user.policy.UserLevelUpgradePolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,10 +58,16 @@ public class UserServiceTest {
     }
 
     @Test
+    @DirtiesContext
     public void upgradeLevels() throws Exception {
         userDao.deleteAll();
 
         users.forEach(user -> userDao.add(user));
+
+        MockMailSender mockMailSender = new MockMailSender();
+        UserLevelUpgradeNormal userLevelUpgrade = new UserLevelUpgradeNormal();
+        userService.setUserLevelUpgradePolicy(userLevelUpgrade);
+        userLevelUpgrade.setMailSender(mockMailSender);
 
         userService.upgradeLevels();
 
@@ -66,6 +76,11 @@ public class UserServiceTest {
         checkLevel(users.get(2), false);
         checkLevel(users.get(3), true);
         checkLevel(users.get(4), false);
+
+        List<String> requests = mockMailSender.getRequests();
+        assertThat(requests.size()).isEqualTo(2);
+        assertThat(requests.get(0)).isEqualTo(users.get(1).getEmail());
+        assertThat(requests.get(1)).isEqualTo(users.get(3).getEmail());
     }
 
     private void checkLevel(User user, boolean upgraded) {

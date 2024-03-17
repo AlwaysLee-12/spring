@@ -32,7 +32,7 @@
 <!--    </bean>-->
 
 <!--    테스트용 자바 메일-->
-    <bean id="mailSender" class="com.practice.spring.user.DummyMailServer"/>
+    <bean id="mailSender" class="com.practice.spring.user.DummyMailSender"/>
 
     <bean id="userService" class="com.practice.spring.user.UserService">
         <property name="userDao" ref="userDao"/>
