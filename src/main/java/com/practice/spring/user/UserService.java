@@ -49,13 +49,7 @@ public class UserService {
 
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
-            List<User> users = userDao.getAll();
-
-            users.forEach(user -> {
-                if (userLevelUpgradePolicy.canUpgradeLevel(user)) {
-                    userLevelUpgradePolicy.upgradeLevel(user);
-                }
-            });
+            upgradeLevelsInternal();
 //            c.commit();
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -69,6 +63,16 @@ public class UserService {
 //            TransactionSynchronizationManager.clearSynchronization();
         }
 
+    }
+
+    private void upgradeLevelsInternal() {
+        List<User> users = userDao.getAll();
+
+        users.forEach(user -> {
+            if (userLevelUpgradePolicy.canUpgradeLevel(user)) {
+                userLevelUpgradePolicy.upgradeLevel(user);
+            }
+        });
     }
 
     public void add(User user) {
