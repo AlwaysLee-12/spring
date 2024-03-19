@@ -1,6 +1,5 @@
 package com.practice.spring;
 
-import com.practice.spring.user.UserService;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.User;
 import com.practice.spring.user.policy.UserLevelUpgradeNormal;

@@ -2,11 +2,12 @@ package com.practice.spring;
 
 import com.practice.spring.user.MockMailSender;
 import com.practice.spring.user.UserService;
+import com.practice.spring.user.UserServiceImpl;
+import com.practice.spring.user.UserServiceTx;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
 import com.practice.spring.user.policy.UserLevelUpgradeNormal;
-import com.practice.spring.user.policy.UserLevelUpgradePolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 import static com.practice.spring.user.policy.UserLevelUpgradeNormal.MIN_LOGCOUNT_FOR_SILVER;
@@ -30,6 +30,8 @@ public class UserServiceTest {
 
     @Autowired
     UserService userService;
+    @Autowired
+    UserServiceImpl userServiceImpl;
     @Autowired
     UserDao userDao;
     List<User> users;
@@ -66,10 +68,10 @@ public class UserServiceTest {
 
         MockMailSender mockMailSender = new MockMailSender();
         UserLevelUpgradeNormal userLevelUpgrade = new UserLevelUpgradeNormal();
-        userService.setUserLevelUpgradePolicy(userLevelUpgrade);
+        userServiceImpl.setUserLevelUpgradePolicy(userLevelUpgrade);
         userLevelUpgrade.setMailSender(mockMailSender);
 
-        userService.upgradeLevels();
+        userServiceImpl.upgradeLevels();
 
         checkLevel(users.get(0), false);
         checkLevel(users.get(1), true);
@@ -112,10 +114,14 @@ public class UserServiceTest {
     @Test
     public void upgradeAllOrNothing() throws Exception {
         TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao, mailSender);
-        userService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
-        userService.setUserDao(userDao);
-//        userService.setDataSource(dataSource);
-        userService.setTransactionManager(transactionManager);
+        testUserLevelUpgradePolicy.setMailSender(mailSender);
+        TestUserService testUserService = new TestUserService();
+        testUserService.setUserDao(userDao);
+        testUserService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
+
+        UserServiceTx userServiceTx = new UserServiceTx();
+        userServiceTx.setTransactionManager(transactionManager);
+        userServiceTx.setUserService(testUserService);
 
         userDao.deleteAll();
 

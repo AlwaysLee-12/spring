@@ -17,12 +17,25 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="userService" class="com.practice.spring.user.UserService">
-        <property name="userDao" ref="userDao"/>
+    <bean id="userService" class="com.practice.spring.user.UserServiceTx">
+        <!--        <property name="dataSource" ref="dataSource"/>-->
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="userService" ref="userServiceImpl"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+
+    <bean id="userServiceImpl" class="com.practice.spring.user.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
+    </bean>
+
+    <bean id="userLevelUpgradePolicy" class="com.practice.spring.user.policy.UserLevelUpgradeNormal">
+        <property name="userDao" ref="userDao"/>
+        <property name="mailSender" ref="mailSender"/>
+    </bean>
+
+    <bean id="mailSender" class="com.practice.spring.user.DummyMailSender"/>
 </beans>

@@ -34,14 +34,19 @@
 <!--    테스트용 자바 메일-->
     <bean id="mailSender" class="com.practice.spring.user.DummyMailSender"/>
 
-    <bean id="userService" class="com.practice.spring.user.UserService">
-        <property name="userDao" ref="userDao"/>
-        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
+    <bean id="userService" class="com.practice.spring.user.UserServiceTx">
 <!--        <property name="dataSource" ref="dataSource"/>-->
         <property name="transactionManager" ref="transactionManager"/>
-    </bean>
+        <property name="userService" ref="userServiceImpl"/>
+     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+
+    <bean id="userServiceImpl" class="com.practice.spring.user.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
+    </bean>
+
 </beans>
