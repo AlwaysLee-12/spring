@@ -3,6 +3,8 @@ package com.practice.spring;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.User;
 import com.practice.spring.user.policy.UserLevelUpgradeNormal;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 
 public class TestUserLevelUpgradePolicy extends UserLevelUpgradeNormal {
 

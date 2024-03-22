@@ -1,5 +1,9 @@
 package com.practice.spring.user;
 
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 

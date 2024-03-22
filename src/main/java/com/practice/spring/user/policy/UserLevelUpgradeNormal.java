@@ -5,6 +5,8 @@ import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
 import jakarta.websocket.Session;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 
 import java.util.Properties;
 
