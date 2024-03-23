@@ -3,22 +3,15 @@ package com.practice.spring;
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "/test-application-context.xml")
+@ContextConfiguration(locations = "/com/practice/spring/common/config/test-application-context.xml")
 //@DirtiesContext //test class에서 application context의 구성이나 상태 강제 변경(해당 컨텍스트는 공유되지 않음)
 public class UserDaoTest {
 
