@@ -1,16 +1,13 @@
-package com.practice.spring.user;
+package com.practice.spring.user.service;
 
 import com.practice.spring.user.dao.UserDao;
 import com.practice.spring.user.domain.Level;
 import com.practice.spring.user.domain.User;
 import com.practice.spring.user.policy.UserLevelUpgradePolicy;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     UserDao userDao;
     UserLevelUpgradePolicy userLevelUpgradePolicy;

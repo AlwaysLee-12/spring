@@ -1,4 +1,4 @@
-package com.practice.spring.user;
+package com.practice.spring.user.service;
 
 import com.practice.spring.user.domain.User;
 import org.springframework.transaction.PlatformTransactionManager;
