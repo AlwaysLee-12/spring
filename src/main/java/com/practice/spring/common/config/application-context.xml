@@ -34,10 +34,12 @@
     <!--    테스트용 자바 메일-->
     <bean id="mailSender" class="com.practice.spring.user.DummyMailSender"/>
 
-    <bean id="userService" class="com.practice.spring.user.service.UserServiceTx">
+    <bean id="userService" class="com.practice.spring.user.service.TxProxyFactoryBean">
         <!--        <property name="dataSource" ref="dataSource"/>-->
+        <property name="target" ref="userServiceImpl"/>
         <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiceImpl"/>
+        <property name="pattern" value="upgradeLevels"/>
+        <property name="serviceInterface" value="com.practice.spring.user.service.UserService"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
