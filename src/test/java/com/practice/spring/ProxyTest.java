@@ -6,6 +6,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 import java.lang.reflect.Proxy;
 
@@ -60,6 +62,23 @@ public class ProxyTest {
         assertThat(proxiedHello.sayHello("Always")).isEqualTo("HELLO ALWAYS");
         assertThat(proxiedHello.sayHi("Always")).isEqualTo("HI ALWAYS");
         assertThat(proxiedHello.sayThankYou("Always")).isEqualTo("THANK YOU ALWAYS");
+    }
+
+    @Test
+    public void pointcutAdvisor() {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new com.practice.spring.proxy.HelloTarget());
+
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("sayH*");
+
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        assertThat(proxiedHello.sayHello("Always")).isEqualTo("HELLO ALWAYS");
+        assertThat(proxiedHello.sayHi("Always")).isEqualTo("HI ALWAYS");
+        assertThat(proxiedHello.sayThankYou("Always")).isEqualTo("Thank You ALWAYS");
     }
 
     static interface Hello {
