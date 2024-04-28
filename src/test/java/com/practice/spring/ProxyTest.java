@@ -1,10 +1,11 @@
 package com.practice.spring;
 
-import com.practice.spring.proxy.Hello;
-import com.practice.spring.proxy.HelloTarget;
 import com.practice.spring.proxy.HelloUppercase;
 import com.practice.spring.proxy.UppercaseHandler;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
 
 import java.lang.reflect.Proxy;
 
@@ -14,10 +15,15 @@ public class ProxyTest {
 
     @Test
     public void simpleProxy() {
-        HelloTarget hello = new HelloTarget();
-        assertThat(hello.sayHello("Always")).isEqualTo("Hello Always");
-        assertThat(hello.sayHi("Always")).isEqualTo("Hi Always");
-        assertThat(hello.sayThankYou("Always")).isEqualTo("Thank You Always");
+        Hello proxiedHello = (Hello) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class[]{Hello.class},
+                new UppercaseHandler(new HelloTarget())
+        );
+
+        assertThat(proxiedHello.sayHello("Always")).isEqualTo("Hello Always");
+        assertThat(proxiedHello.sayHi("Always")).isEqualTo("Hi Always");
+        assertThat(proxiedHello.sayThankYou("Always")).isEqualTo("Thank You Always");
     }
 
     @Test
@@ -42,4 +48,55 @@ public class ProxyTest {
         assertThat(proxiedHello.sayHi("Always")).isEqualTo("HI ALWAYS");
         assertThat(proxiedHello.sayThankYou("Always")).isEqualTo("THANK YOU ALWAYS");
     }
+
+    @Test
+    public void proxyFactoryBean() {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+        pfBean.addAdvice(new UppercaseAdvice());
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        assertThat(proxiedHello.sayHello("Always")).isEqualTo("HELLO ALWAYS");
+        assertThat(proxiedHello.sayHi("Always")).isEqualTo("HI ALWAYS");
+        assertThat(proxiedHello.sayThankYou("Always")).isEqualTo("THANK YOU ALWAYS");
+    }
+
+    static interface Hello {
+
+        String sayHello(String name);
+
+        String sayHi(String name);
+
+        String sayThankYou(String name);
+    }
+
+    static class UppercaseAdvice implements MethodInterceptor {
+
+        @Override
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            String ret = (String) invocation.proceed();
+
+            return ret.toUpperCase();
+        }
+    }
+
+    static class HelloTarget implements Hello {
+
+        @Override
+        public String sayHello(String name) {
+            return "Hello " + name;
+        }
+
+        @Override
+        public String sayHi(String name) {
+            return "Hi " + name;
+        }
+
+        @Override
+        public String sayThankYou(String name) {
+            return "Thank You " + name;
+        }
+    }
+
 }
