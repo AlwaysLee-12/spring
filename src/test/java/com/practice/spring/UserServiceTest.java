@@ -37,6 +37,8 @@ public class UserServiceTest {
     @Autowired
     UserService userService;
     @Autowired
+    UserService testUserService;
+    @Autowired
     UserServiceImpl userServiceImpl;
     @Autowired
     UserDao userDao;
@@ -128,7 +130,7 @@ public class UserServiceTest {
     public void upgradeAllOrNothing() throws Exception {
         TestUserLevelUpgradePolicy testUserLevelUpgradePolicy = new TestUserLevelUpgradePolicy(users.get(3).getId(), userDao, mailSender);
         testUserLevelUpgradePolicy.setMailSender(mailSender);
-        TestUserService testUserService = new TestUserService();
+        TestUserServiceImpl testUserService = new TestUserServiceImpl();
         testUserService.setUserDao(userDao);
         testUserService.setUserLevelUpgradePolicy(testUserLevelUpgradePolicy);
 
@@ -147,7 +149,7 @@ public class UserServiceTest {
         }
 
         try {
-            txUserService.upgradeLevels();
+            testUserService.upgradeLevels();
             fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
         }

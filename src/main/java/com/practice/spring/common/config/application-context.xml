@@ -34,30 +34,22 @@
     <!--    테스트용 자바 메일-->
     <bean id="mailSender" class="com.practice.spring.user.DummyMailSender"/>
 
-    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean id="userService" class="com.practice.spring.user.service.UserServiceImpl">
         <!--        <property name="dataSource" ref="dataSource"/>-->
-        <property name="target" ref="userServiceImpl"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionAdvisor</value>
-            </list>
-        </property>
+        <property name="userDao" ref="userDao"/>
+        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="userServiceImpl" class="com.practice.spring.user.service.UserServiceImpl">
-        <property name="userDao" ref="userDao"/>
-        <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy"/>
-    </bean>
-
     <bean id="transactionAdvice" class="com.practice.spring.proxy.TransactionAdvice">
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+    <bean id="transactionPointcut" class="com.practice.spring.proxy.NameMatchClassMethodPointcut">
+        <property name="mappedClassName" value="*ServiceImpl"/>
         <property name="mappedName" value="upgrade*"/>
     </bean>
 
@@ -65,4 +57,6 @@
         <property name="advice" ref="transactionAdvice"/>
         <property name="pointcut" ref="transactionPointcut"/>
     </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 </beans>
